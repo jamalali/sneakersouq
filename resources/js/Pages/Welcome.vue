@@ -21,7 +21,7 @@ defineProps({
 
         <div class="max-w-7xl mx-auto p-6 lg:p-8">
             <div class="flex mb-1 justify-center">
-                <img class="w-20" src="/assets/img/SNeakerSouqLogo.jpeg" alt="SneakerSouq Logo">
+                <img class="w-20" src="/assets/img/SneakerSouqLogo.jpeg" alt="SneakerSouq Logo">
             </div>
             <div class="flex font-bold justify-center">
                 Admin
