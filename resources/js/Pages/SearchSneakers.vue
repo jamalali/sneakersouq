@@ -66,7 +66,7 @@ function handleSync() {
                             <p v-if="state.syncMessage" v-text="state.syncMessage" class="bg-sky-200 border border-gray-400 font-bold mb-2 p-2 rounded"></p>
 
                             <form class="flex-1 flex" @submit.prevent="handleSearch">
-                                <input v-model="searchForm.sku" type="text" name="sku" placeholder="Product skus, seperated by commas (e.g. 555088-134,dj4375-106)" class="flex-1 py-1 px-4 text-sm border-gray-300 rounded-l-md shadow-sm" />
+                                <input v-model="searchForm.sku" type="text" name="sku" placeholder="Product skus, seperated by commas (Max. 40) (e.g. 555088-134,dj4375-106)" class="flex-1 py-1 px-4 text-sm border-gray-300 rounded-l-md shadow-sm" />
                                 <button :disabled="searchForm.processing" class="button rounded-none rounded-r-md disabled:opacity-50" type="submit">Search</button>
                             </form>
 

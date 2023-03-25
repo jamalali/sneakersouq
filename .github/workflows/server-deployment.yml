@@ -30,4 +30,7 @@ jobs:
             php artisan route:cache
             php artisan view:cache
             php artisan migrate
+            source /home/firestor/nodevenv/sneakersouq/16/bin/activate && cd /home/firestor/sneakersouq
             npm run build
+            deactivate
+
