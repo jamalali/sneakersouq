@@ -16,7 +16,7 @@ class SearchSneakersController extends Controller
         $sneakers = null;
         $cacheKey = null;
 
-        $limit = '100';
+        $limit = '40';
         $page = $request->query('page', null);
         $sku = $request->query('sku', null);
 
