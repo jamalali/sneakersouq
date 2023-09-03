@@ -38,8 +38,6 @@ class ProductsController extends Controller
             data_forget($product, 'images.*.variant_ids');
 
             ProcessIncomingProduct::dispatch($product);
-            
-            break; // While testing just process the first product
         }
 
         return response()->json([
