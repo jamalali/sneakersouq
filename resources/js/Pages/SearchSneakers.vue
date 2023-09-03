@@ -30,7 +30,8 @@ function handleSearch() {
 
 const syncForm = useForm({
     cacheKey: props.cacheKey,
-    selectedSneakers: []
+    selectedSneakers: [],
+    markup: 5
 })
 
 function handleSync() {
@@ -92,8 +93,12 @@ function handleSync() {
                                                         <td class="p-1 text-xs whitespace-nowrap">{{ sneaker.silhouette }}</td>
                                                     </tr>
                                                     <tr :class="rowClass">
-                                                        <th class="text-left p-1 text-xs whitespace-nowrap">Retail price:</th>
-                                                        <td class="p-1 text-xs whitespace-nowrap">{{ sneaker.retailPrice }}</td>
+                                                        <th class="text-left p-1 text-xs whitespace-nowrap">Estimated market value:</th>
+                                                        <td class="p-1 text-xs whitespace-nowrap">{{ sneaker.estimatedMarketValue }}</td>
+                                                    </tr>
+                                                    <tr :class="rowClass">
+                                                        <th class="text-left p-1 text-xs whitespace-nowrap">Website price:</th>
+                                                        <td class="p-1 text-xs whitespace-nowrap">{{ sneaker.estimatedMarketValue }}</td>
                                                     </tr>
                                                 </table>
                                             </td>
@@ -120,7 +125,25 @@ function handleSync() {
                                         </tr>
                                     </tbody>
                                     <tfoot>
-                                        <td colspan="3" class="p-2">
+                                        <td colspan="2" class="p-2">
+                                            <div class="relative flex flex-wrap items-stretch">
+                                                <span
+                                                    class="flex items-center whitespace-nowrap rounded-l border border-r-0 border-solid border-neutral-300 px-3 py-[0.25rem] "
+                                                >
+                                                    Markup
+                                                </span>
+                                                <input
+                                                    v-model="syncForm.markup"
+                                                    type="text"
+                                                    class="relative m-0 block w-[1px] min-w-0 flex-auto rounded-l border border-solid border-neutral-300 bg-transparent bg-clip-padding px-3 py-[0.25rem] text-base font-normal leading-[1.6] text-neutral-700 outline-none transition duration-200 ease-in-out focus:z-[3] focus:border-primary focus:text-neutral-700 focus:shadow-[inset_0_0_0_1px_rgb(59,113,202)] focus:outline-none dark:border-neutral-600 dark:text-neutral-200 dark:placeholder:text-neutral-200 dark:focus:border-primary" />
+                                                <span
+                                                    class="flex items-center whitespace-nowrap rounded-r border border-l-0 border-solid border-neutral-300 px-3 py-[0.25rem]"
+                                                >
+                                                    %
+                                                </span>
+                                            </div>
+                                        </td>
+                                        <td class="p-2">
                                             <button type="submit" :disabled="syncForm.processing || syncForm.selectedSneakers.length==0" class="button rounded-md disabled:opacity-50">
                                                 Sync to Shopify
                                             </button>

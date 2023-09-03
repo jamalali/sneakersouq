@@ -103,7 +103,7 @@ class SearchSneakersController extends Controller
         $product['variants'] = [
             [
                 'option1' => 'Default Title',
-                'price' => '0.00',
+                'price' => $sneaker->estimatedMarketValue,
                 'sku' => $sneaker->sku
             ]
         ];
