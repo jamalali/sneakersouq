@@ -9,6 +9,7 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 
 class CreateShopifyProduct implements ShouldQueue
 {
@@ -36,6 +37,12 @@ class CreateShopifyProduct implements ShouldQueue
         if ($response->tooManyRequests()) {
             $retryAfter = $response->header('retry-after');
             if ($retryAfter) { $this->release($retryAfter); }
+        }
+
+        $product = $response->json()['product'];
+
+        if ($product) {
+            Log::info('Created product in Shopify', ['title' => $product['title']]);
         }
     }
 }
