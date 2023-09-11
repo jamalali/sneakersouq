@@ -55,7 +55,7 @@ class AgentsController extends Controller
     {
         $allResults = [];
 
-        $limit = 2;
+        $limit = 1000;
         $page = 1;
 
         // "total" => 5000
@@ -74,7 +74,7 @@ class AgentsController extends Controller
             $result = $response['result'];
             $allResults = array_merge($allResults, $result);
 
-            if ($page == 2) {
+            if ($page == 10) {
                 break;
             }
 
