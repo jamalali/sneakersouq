@@ -4,7 +4,7 @@ use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use App\Http\Controllers\SearchSneakersController;
-// use App\Http\Controllers\SneakerController;
+use App\Http\Controllers\AgentsController;
 
 /*
 |--------------------------------------------------------------------------
@@ -25,6 +25,10 @@ Route::get('/', function () {
         'phpVersion' => PHP_VERSION,
     ]);
 });
+
+Route::get('/agents', [AgentsController::class, 'index'])->name('agents.index');
+Route::get('/agents/{agentId}', [AgentsController::class, 'show'])->name('agents.show');
+Route::post('/agents/{agentId}/sync', [AgentsController::class, 'sync'])->name('agents.sync');
 
 Route::middleware([
     'auth:sanctum',

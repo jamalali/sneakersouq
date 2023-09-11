@@ -10,16 +10,18 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Cache;
 
 class CreateShopifyProduct implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    public $tries = 10;
+    public $product = null;
 
-    public function __construct(
-        public $product
-    ) {}
+    public function __construct(public $cacheKey)
+    {
+        $this->product = Cache::get($this->cacheKey);
+    }
 
     public function handle(): void
     {
@@ -39,10 +41,11 @@ class CreateShopifyProduct implements ShouldQueue
             if ($retryAfter) { $this->release($retryAfter); }
         }
 
-        $product = $response->json()['product'];
+        if ($response->created()) {
+            $product = $response->json()['product'];
 
-        if ($product) {
             Log::info('Created product in Shopify', ['title' => $product['title']]);
+            Cache::forget($this->cacheKey);
         }
     }
 }

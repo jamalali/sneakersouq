@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Webhooks;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Jobs\ProcessIncomingProduct;
+use Illuminate\Support\Facades\Log;
 
 class ProductsController extends Controller
 {
@@ -12,6 +13,8 @@ class ProductsController extends Controller
         $bodyContent = $request->getContent();
         $bodyJson = json_decode($bodyContent);
         $results = $bodyJson->result;
+
+        Log::info('Received ' . count($results) . ' products from Agenty');
 
         foreach($results as $result) {
             $productContent = $result->Product;

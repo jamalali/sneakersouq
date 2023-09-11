@@ -3,7 +3,6 @@
 namespace App\Jobs;
 
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
@@ -12,16 +11,18 @@ use Illuminate\Support\Facades\Http;
 use App\Jobs\UpdateShopifyProduct;
 use App\Jobs\CreateShopifyProduct;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Cache;
 
 class ProcessIncomingProduct implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    public $tries = 10;
+    public $product = null;
 
-    public function __construct(
-        public $product
-    ) {}
+    public function __construct(public $cacheKey)
+    {
+        $this->product = Cache::get($this->cacheKey);
+    }
 
     public function handle(): void
     {
@@ -49,10 +50,11 @@ class ProcessIncomingProduct implements ShouldQueue
         $jsonResponse = $response->json();
 
         if (!$jsonResponse['products']) {
-            CreateShopifyProduct::dispatch($this->product);
+            CreateShopifyProduct::dispatch($this->cacheKey);
+            // Log::info('Ignore creating product', ['product' => $this->product->title]);
         } else {
-            // $shopProduct = $jsonResponse['products'][0];
-            // UpdateShopifyProduct::dispatch($this->product, $shopProduct);
+            $shopProduct = $jsonResponse['products'][0];
+            UpdateShopifyProduct::dispatch($this->cacheKey, $shopProduct['id']);
         }
     }
 }

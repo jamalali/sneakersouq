@@ -2,6 +2,10 @@
 
 return [
 
+    'agenty' => [
+        'api_key' => env('AGENTY_API_KEY')
+    ],
+
     'sneakers_db' => [
         'url'       => env('SNEAKERS_DB_URL'),
         'api_key'   => env('SNEAKERS_DB_API_KEY'),
