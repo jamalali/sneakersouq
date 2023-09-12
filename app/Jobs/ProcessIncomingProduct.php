@@ -18,10 +18,12 @@ class ProcessIncomingProduct implements ShouldQueue
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     public $product = null;
+    public $cacheKey = null;
 
-    public function __construct(public $cacheKey)
+    public function __construct($cacheKey)
     {
-        $this->product = Cache::get($this->cacheKey);
+        $this->cacheKey = $cacheKey;
+        $this->product = Cache::get($cacheKey);
     }
 
     public function handle(): void

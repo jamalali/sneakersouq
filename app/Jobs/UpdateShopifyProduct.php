@@ -16,11 +16,15 @@ class UpdateShopifyProduct implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
+    public $cacheKey = null;
+    public $shopifyProductId = null;
     public $product = null;
 
-    public function __construct(public $cacheKey, public $shopifyProductId)
+    public function __construct($cacheKey, $shopifyProductId)
     {
-        $this->product = Cache::get($this->cacheKey);
+        $this->cacheKey = $cacheKey;
+        $this->shopifyProductId = $shopifyProductId;
+        $this->product = Cache::get($cacheKey);
     }
     
     public function handle(): void
