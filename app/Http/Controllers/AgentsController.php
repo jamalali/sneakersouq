@@ -13,12 +13,16 @@ class AgentsController extends Controller
 {
     public function index(Request $request): View
     {
-
         $agents = array();
 
         $agents[] = array(
             'title' => 'Kicks Crew - Nike Products',
             'id' => 'g9af3diwy7'
+        );
+
+        $agents[] = array(
+            'title' => 'Kicks Crew - Supreme Products',
+            'id' => 'wlikgfpt0e'
         );
  
         return view('agents.list', [
@@ -121,6 +125,8 @@ class AgentsController extends Controller
 
             ProcessIncomingProduct::dispatch($cacheKey);
         }
+
+        return true;
     }
 
     protected function getAgentResults($agentId, $page = 1, $limit = 1000)
