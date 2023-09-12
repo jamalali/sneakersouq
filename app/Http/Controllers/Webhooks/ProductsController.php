@@ -40,7 +40,10 @@ class ProductsController extends Controller
             data_forget($product, 'images.*.updated_at');
             data_forget($product, 'images.*.variant_ids');
 
-            ProcessIncomingProduct::dispatch($product);
+            $cacheKey = 'incoming_product_' . $product->title;
+            Cache::put($cacheKey, $product);
+
+            ProcessIncomingProduct::dispatch($cacheKey);
         }
 
         return response()->json([
