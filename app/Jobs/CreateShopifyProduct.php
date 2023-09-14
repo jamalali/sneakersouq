@@ -44,9 +44,6 @@ class CreateShopifyProduct implements ShouldQueue
         }
 
         if ($response->created()) {
-            $product = $response->json()['product'];
-
-            Log::info('Created product in Shopify', ['title' => $product['title']]);
             Cache::forget($this->cacheKey);
         }
     }

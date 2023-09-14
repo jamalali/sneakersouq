@@ -46,9 +46,6 @@ class UpdateShopifyProduct implements ShouldQueue
         }
 
         if ($response->ok()) {
-            $product = $response->json()['product'];
-
-            Log::info('Updated product in Shopify', ['title' => $product['title']]);
             Cache::forget($this->cacheKey);
         }
     }

@@ -85,8 +85,8 @@ class AgentsController extends Controller
             $response = $this->getAgentResults($agentId, $page, $limit);
             $result = $response['result'];
 
-            // $cacheKey = 'incoming_products_' . $agentId . '_' . $page;
-            // Cache::put($cacheKey, $result);
+            $cacheKey = 'incoming_products_' . $agentId . '_' . $page;
+            Cache::put($cacheKey, $result);
 
             $jobs[] = new ProcessIncomingProducts($cacheKey);
 
