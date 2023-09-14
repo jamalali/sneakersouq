@@ -4,10 +4,11 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\View\View;
+use App\Jobs\ProcessIncomingProducts;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Cache;
-use App\Jobs\ProcessIncomingProduct;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Bus;
 
 class AgentsController extends Controller
 {
@@ -57,26 +58,39 @@ class AgentsController extends Controller
 
     public function sync(Request $request, $agentId)
     {
-        $allResults = [];
-
-        $limit = 1000;
+        $resultsCount = 0;
+        $limit = 100;
         $page = 1;
-
-        // "total" => 5000
-        // "limit" => 500
-        // "offset" => 0
-        // "returned" => 500
+        $jobs = [];
 
         $firstPage = $this->getAgentResults($agentId, $page, $limit);
         $firstPageResult = $firstPage['result'];
-        $allResults = array_merge($allResults, $firstPageResult);
+        $resultsCount = $resultsCount + count($firstPageResult);
+
+        $cacheKey = 'incoming_products_' . $agentId . '_' . $page;
+        Cache::put($cacheKey, $firstPageResult);
+
+        $jobs[] = new ProcessIncomingProducts($cacheKey);
+
         $total = $firstPage['total'];
         $page++;
 
-        while (count($allResults) < $total) {
+        Bus::chain($jobs)->dispatch();
+
+        return redirect()->route('agents.show', [
+            'agentId' => $agentId
+        ]);
+
+        while ($resultsCount < $total) {
             $response = $this->getAgentResults($agentId, $page, $limit);
             $result = $response['result'];
-            $allResults = array_merge($allResults, $result);
+
+            // $cacheKey = 'incoming_products_' . $agentId . '_' . $page;
+            // Cache::put($cacheKey, $result);
+
+            $jobs[] = new ProcessIncomingProducts($cacheKey);
+
+            $resultsCount = $resultsCount + count($result);
 
             if ($page == 10) {
                 break;
@@ -85,49 +99,51 @@ class AgentsController extends Controller
             $page++;
         }
 
-        Log::info('Fetched ' . count($allResults) . ' products from Agenty');
+        Log::info('Fetched ' . $resultsCount . ' products from Agenty. Agent ID: ' . $agentId);
 
-        $this->parseAndQueueProducts($allResults);
+        Bus::chain($jobs)->dispatch();
+
+        // $this->parseAndQueueProducts($allResults);
 
         return redirect()->route('agents.show', [
             'agentId' => $agentId
         ]);
     }
 
-    protected function parseAndQueueProducts($results)
-    {
-        foreach($results as $result) {
-            $productContent = $result['Product'];
-            $product = json_decode($productContent);
+    // protected function parseAndQueueProducts($results)
+    // {
+    //     foreach($results as $result) {
+    //         $productContent = $result['Product'];
+    //         $product = json_decode($productContent);
 
-            unset($product->id);
-            unset($product->created_at);
-            unset($product->updated_at);
-            unset($product->published_at);
-            unset($product->handle);
+    //         unset($product->id);
+    //         unset($product->created_at);
+    //         unset($product->updated_at);
+    //         unset($product->published_at);
+    //         unset($product->handle);
 
-            data_forget($product, 'variants.*.id');
-            data_forget($product, 'variants.*.product_id');
-            data_forget($product, 'variants.*.created_at');
-            data_forget($product, 'variants.*.updated_at');
+    //         data_forget($product, 'variants.*.id');
+    //         data_forget($product, 'variants.*.product_id');
+    //         data_forget($product, 'variants.*.created_at');
+    //         data_forget($product, 'variants.*.updated_at');
 
-            data_forget($product, 'options.*.id');
-            data_forget($product, 'options.*.product_id');
+    //         data_forget($product, 'options.*.id');
+    //         data_forget($product, 'options.*.product_id');
 
-            data_forget($product, 'images.*.id');
-            data_forget($product, 'images.*.product_id');
-            data_forget($product, 'images.*.created_at');
-            data_forget($product, 'images.*.updated_at');
-            data_forget($product, 'images.*.variant_ids');
+    //         data_forget($product, 'images.*.id');
+    //         data_forget($product, 'images.*.product_id');
+    //         data_forget($product, 'images.*.created_at');
+    //         data_forget($product, 'images.*.updated_at');
+    //         data_forget($product, 'images.*.variant_ids');
 
-            $cacheKey = 'incoming_product_' . $product->title;
-            Cache::put($cacheKey, $product);
+    //         $cacheKey = 'incoming_product_' . $product->title;
+    //         Cache::put($cacheKey, $product);
 
-            ProcessIncomingProduct::dispatch($cacheKey);
-        }
+    //         ProcessIncomingProduct::dispatch($cacheKey);
+    //     }
 
-        return true;
-    }
+    //     return true;
+    // }
 
     protected function getAgentResults($agentId, $page = 1, $limit = 1000)
     {

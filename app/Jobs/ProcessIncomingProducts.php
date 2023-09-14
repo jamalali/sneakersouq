@@ -1,32 +1,31 @@
 <?php
-namespace App\Http\Controllers\Webhooks;
 
-use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-use App\Jobs\ProcessIncomingProduct;
+namespace App\Jobs;
+
+use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Foundation\Bus\Dispatchable;
+use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Cache;
 
-class ProductsController extends Controller
+class ProcessIncomingProducts implements ShouldQueue
 {
-    public function index(Request $request): Object
+    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+
+    public function __construct(
+        public $cacheKey
+    ){}
+
+    public function handle(): void
     {
-        $bodyContent = $request->getContent();
-        $bodyJson = json_decode($bodyContent);
-        $results = $bodyJson->result;
+        $results = Cache::get($this->cacheKey);
 
-        $expectedNumResults = 500;
-
-        if (count($results) > $expectedNumResults) {
-            return response()->json([
-                'message' => 'Results count must be less than or equal to ' . $expectedNumResults
-            ], 400);
-        }
-
-        Log::info('Received ' . count($results) . ' products from Agenty');
+        Log::info('Processing ' . count($results) . ' products.');
 
         foreach($results as $result) {
-            $productContent = $result->Product;
+            $productContent = $result['Product'];
             $product = json_decode($productContent);
 
             unset($product->id);
@@ -54,9 +53,5 @@ class ProductsController extends Controller
 
             ProcessIncomingProduct::dispatch($cacheKey);
         }
-
-        return response()->json([
-            'message' => 'success'
-        ], 201);
     }
 }
