@@ -10,7 +10,6 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Http;
 use App\Jobs\UpdateShopifyProduct;
 use App\Jobs\CreateShopifyProduct;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Cache;
 
 class ProcessIncomingProduct implements ShouldQueue
@@ -28,8 +27,6 @@ class ProcessIncomingProduct implements ShouldQueue
 
     public function handle(): void
     {
-        Log::info('Processing incoming product', ['product' => $this->product->title]);
-
         $shopifyCnfg = config('sneakersouq.shopify');
         $endpoint = $shopifyCnfg['store_url'] . '/admin/api/2022-04/products.json';
 
@@ -53,7 +50,6 @@ class ProcessIncomingProduct implements ShouldQueue
 
         if (!$jsonResponse['products']) {
             CreateShopifyProduct::dispatch($this->cacheKey);
-            // Log::info('Ignore creating product', ['product' => $this->product->title]);
         } else {
             $shopProduct = $jsonResponse['products'][0];
             UpdateShopifyProduct::dispatch($this->cacheKey, $shopProduct['id']);
