@@ -48,11 +48,11 @@ class ProcessIncomingProduct implements ShouldQueue
      
         $jsonResponse = $response->json();
 
-        if (!$jsonResponse['products']) {
-            CreateShopifyProduct::dispatch($this->cacheKey);
-        } else {
+        if ($jsonResponse['products']) {
             $shopProduct = $jsonResponse['products'][0];
             UpdateShopifyProduct::dispatch($this->cacheKey, $shopProduct['id']);
+        } else {
+            CreateShopifyProduct::dispatch($this->cacheKey);
         }
     }
 }
