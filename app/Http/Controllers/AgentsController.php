@@ -59,7 +59,7 @@ class AgentsController extends Controller
     public function sync(Request $request, $agentId)
     {
         $resultsCount = 0;
-        $limit = 100;
+        $limit = 500;
         $page = 1;
         $jobs = [];
 
@@ -76,10 +76,6 @@ class AgentsController extends Controller
         $page++;
 
         Bus::chain($jobs)->dispatch();
-
-        return redirect()->route('agents.show', [
-            'agentId' => $agentId
-        ]);
 
         while ($resultsCount < $total) {
             $response = $this->getAgentResults($agentId, $page, $limit);
@@ -105,9 +101,7 @@ class AgentsController extends Controller
 
         // $this->parseAndQueueProducts($allResults);
 
-        return redirect()->route('agents.show', [
-            'agentId' => $agentId
-        ]);
+        return redirect()->route('agents.index')->with('sync-started', $agentId);
     }
 
     // protected function parseAndQueueProducts($results)

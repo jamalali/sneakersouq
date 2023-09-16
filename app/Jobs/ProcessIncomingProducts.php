@@ -25,7 +25,7 @@ class ProcessIncomingProducts implements ShouldQueue
         Log::info('Processing ' . count($results) . ' products.');
 
         foreach($results as $result) {
-            $productContent = $result['Product'];
+            $productContent = is_array($result) ? $result['Product'] : $result->Product;
             $product = json_decode($productContent);
 
             unset($product->id);
@@ -53,5 +53,7 @@ class ProcessIncomingProducts implements ShouldQueue
 
             ProcessIncomingProduct::dispatch($cacheKey);
         }
+
+        Cache::forget($this->cacheKey);
     }
 }
