@@ -46,13 +46,22 @@ class ProcessIncomingProduct implements ShouldQueue
             $retryAfter = $response->header('retry-after');
             if ($retryAfter) { $this->release($retryAfter); }
         }
+
+        $shopifyProducts = null;
+        $shopifyProduct = null;
      
         $jsonResponse = $response->json();
-        $products = $jsonResponse['products'];
 
-        if (count($products)) {
-            $shopProduct = $products[0];
-            UpdateShopifyProduct::dispatch($this->cacheKey, $shopProduct['id']);
+        if (array_key_exists('products', $jsonResponse)) {
+            $shopifyProducts = $jsonResponse['products'];
+
+            if (count($shopifyProducts)) {
+                $shopifyProduct = $shopifyProducts[0];
+            }
+        }
+
+        if ($shopifyProduct) {
+            UpdateShopifyProduct::dispatch($this->cacheKey, $shopifyProduct['id']);
         } else {
             CreateShopifyProduct::dispatch($this->cacheKey);
         }
