@@ -47,8 +47,8 @@ class ProcessIncomingProduct implements ShouldQueue
             if ($retryAfter) { $this->release($retryAfter); }
         }
 
-        $shopifyProducts = null;
-        $shopifyProduct = null;
+        $shopifyProducts = false;
+        $shopifyProduct = false;
      
         $jsonResponse = $response->json();
 
