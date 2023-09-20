@@ -7,6 +7,7 @@ use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Queue\Middleware\WithoutOverlapping;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Cache;
@@ -25,6 +26,11 @@ class UpdateShopifyProduct implements ShouldQueue
         $this->shopifyProductId = $shopifyProductId;
         $this->product = Cache::get($cacheKey);
     }
+
+    public function middleware(): array
+    {
+        return [new WithoutOverlapping($this->product->title)];
+    }
     
     public function handle(): void
     {
@@ -42,9 +48,7 @@ class UpdateShopifyProduct implements ShouldQueue
         if ($response->tooManyRequests()) {
             $retryAfter = $response->header('retry-after');
             if ($retryAfter) { $this->release($retryAfter); }
-        }
-
-        if ($response->ok()) {
+        } else if ($response->ok()) {
             Cache::forget($this->cacheKey);
         }
     }
