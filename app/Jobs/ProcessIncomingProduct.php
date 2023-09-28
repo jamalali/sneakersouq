@@ -12,7 +12,6 @@ use Illuminate\Support\Facades\Http;
 use App\Jobs\UpdateShopifyProduct;
 use App\Jobs\CreateShopifyProduct;
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\Log;
 
 class ProcessIncomingProduct implements ShouldQueue
 {

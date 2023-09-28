@@ -37,6 +37,10 @@ class UpdateShopifyProduct implements ShouldQueue
         $shopifyCnfg = config('sneakersouq.shopify');
         $endpoint = $shopifyCnfg['store_url'] . '/admin/api/2022-04/products/' . $this->shopifyProductId . '.json';
 
+        foreach($this->product->variants as &$variant) {
+            $variant->price = $variant->price * 3.673;
+        }
+
         $data = [];
         $data['product'] = $this->product;
 

@@ -15,11 +15,11 @@ class ProductsController extends Controller
         $bodyJson = json_decode($bodyContent);
         $results = $bodyJson->result;
 
-        $expectedNumResults = 500;
+        $expectedNumResults = 250;
 
         if (count($results) > $expectedNumResults) {
             return response()->json([
-                'message' => 'Results count must be less than or equal to ' . $expectedNumResults
+                'message' => 'Results count must be ' . $expectedNumResults .' or less. ' . count($results) .' given.'
             ], 400);
         }
 

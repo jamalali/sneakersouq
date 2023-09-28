@@ -59,7 +59,7 @@ class AgentsController extends Controller
     public function sync(Request $request, $agentId)
     {
         $resultsCount = 0;
-        $limit = 500;
+        $limit = 250;
         $page = 1;
         $jobs = [];
 
