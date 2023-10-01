@@ -36,8 +36,13 @@ class CreateShopifyProduct implements ShouldQueue
         $endpoint = $shopifyCnfg['store_url'] . '/admin/api/2022-04/products.json';
 
         foreach($this->product->variants as &$variant) {
-            $variant->price = $variant->price * 3.673;
-            $variant->inventory_policy = 'continue';
+            if ($variant->price > 0) {
+                $variant->price = $variant->price * 3.673;
+                $variant->inventory_quantity = 99;
+            } else {
+                $variant->inventory_quantity = 0;
+                $variant->inventory_policy = 'deny';
+            }
         }
 
         $data = [];
