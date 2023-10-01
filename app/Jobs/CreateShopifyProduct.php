@@ -37,6 +37,7 @@ class CreateShopifyProduct implements ShouldQueue
 
         foreach($this->product->variants as &$variant) {
             $variant->price = $variant->price * 3.673;
+            $variant->inventory_policy = 'continue';
         }
 
         $data = [];
