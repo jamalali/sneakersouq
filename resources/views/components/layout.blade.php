@@ -11,6 +11,7 @@
         <link href="/assets/fontawesome/css/solid.css" rel="stylesheet">
     </head>
     <body>
+        <x-navbar />
         <section class="section">
             <div class="container">
                 {{ $slot }}
