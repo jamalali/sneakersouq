@@ -92,6 +92,13 @@ class ProcessIncomingProducts implements ShouldQueue
 
                 if ($variant->price > 0) {
                     $vPrice = $variant->price * 3.673;
+                    $vPrice = $vPrice + 200; // Shipping
+                    $vPrice = $vPrice + ($vPrice / 2);
+
+                    if ($vPrice < 600) {
+                        $vPrice = $vPrice + 200;
+                    }
+
                     $vPrice = number_format((float)$vPrice, 2, '.', '');
                     $vInventoryQuantity = 99;
                     $vInventoryPolicy = 'continue';

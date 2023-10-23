@@ -1,11 +1,10 @@
 <?php
 
-use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
-use Inertia\Inertia;
 use App\Http\Controllers\SearchSneakersController;
 use App\Http\Controllers\AgentsController;
 use App\Http\Controllers\ProductsController;
+use App\Http\Controllers\ProfileController;
 
 /*
 |--------------------------------------------------------------------------
@@ -13,35 +12,34 @@ use App\Http\Controllers\ProductsController;
 |--------------------------------------------------------------------------
 |
 | Here is where you can register web routes for your application. These
-| routes are loaded by the RouteServiceProvider within a group which
-| contains the "web" middleware group. Now create something great!
+| routes are loaded by the RouteServiceProvider and all of them will
+| be assigned to the "web" middleware group. Make something great!
 |
 */
 
-Route::view('/', 'welcome');
+Route::get('/', function () {
+    return view('welcome');
+});
 
-// Route::get('/', function () {
-//     return Inertia::render('Welcome', [
-//         'canLogin' => Route::has('login'),
-//         'canRegister' => Route::has('register'),
-//         'laravelVersion' => Application::VERSION,
-//         'phpVersion' => PHP_VERSION,
-//     ]);
-// });
+Route::get('/dashboard', function () {
+    return view('dashboard');
+})->middleware(['auth', 'verified'])->name('dashboard');
 
-Route::get('/products', [ProductsController::class, 'index'])->name('products.index');
+Route::middleware('auth')->group(function () {
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
-Route::get('/agents', [AgentsController::class, 'index'])->name('agents.index');
-Route::get('/agents/{agentId}', [AgentsController::class, 'show'])->name('agents.show');
-Route::post('/agents/{agentId}/sync', [AgentsController::class, 'sync'])->name('agents.sync');
+    Route::get('/products', [ProductsController::class, 'index'])->name('products.index');
 
-Route::middleware([
-    'auth:sanctum',
-    config('jetstream.auth_session'),
-    'verified',
-])->group(function () {
     Route::get('/search-sneakers', [SearchSneakersController::class, 'index'])->name('search-sneakers');
     Route::post('/search-sneakers', [SearchSneakersController::class, 'shopifySync'])->name('shopify-sync');
     // Route::get('/sneaker/{sneakerId}/{cacheKey?}/{shopifyProductId?}', [SneakerController::class, 'show'])->name('sneaker');
     // Route::post('/sneaker/shopify-up', [SneakerController::class, 'shopifyUp'])->name('shopify-up');
+
+    Route::get('/agents', [AgentsController::class, 'index'])->name('agents.index');
+    Route::get('/agents/{agentId}', [AgentsController::class, 'show'])->name('agents.show');
+    Route::post('/agents/{agentId}/sync', [AgentsController::class, 'sync'])->name('agents.sync');
 });
+
+require __DIR__.'/auth.php';
