@@ -100,6 +100,7 @@ class ProcessIncomingProducts implements ShouldQueue
                     }
 
                     $vPrice = number_format((float)$vPrice, 2, '.', '');
+                    $vPriceRounded = round($vPrice / 50) * 50;
                     $vInventoryQuantity = 99;
                     $vInventoryPolicy = 'continue';
                 } else {
@@ -160,10 +161,10 @@ class ProcessIncomingProducts implements ShouldQueue
                 $line[] = 'manual';
 
                 // Variant Price
-                $line[] = $vPrice;
+                $line[] = $vPriceRounded;
 
                 // Variant Compare At Price
-                $line[] = $variant->compare_at_price ? $variant->compare_at_price : '';
+                $line[] = $vPrice;
 
                 // Variant Requires Shipping
                 $line[] = 'true';
