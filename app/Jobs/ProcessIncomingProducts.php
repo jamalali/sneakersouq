@@ -25,10 +25,11 @@ class ProcessIncomingProducts implements ShouldQueue
         Log::info('Processing ' . count($results) . ' products.');
 
         $storagePath = storage_path('app/public/product_data/');
-        $dateTimeNow = date("ymd_Hi_e");   
+        $rand = substr(md5(microtime()), 0, 10);
+        $dateTimeNow = date("ymd_Hi_e");
 
-        $fileName = "products_" . $dateTimeNow . ".csv";
-        $fileNameNoImg = "products_" . $dateTimeNow . "_no_images.csv";
+        $fileName = "products_" . $dateTimeNow . "_". $rand . ".csv";
+        $fileNameNoImg = "products_" . $dateTimeNow . "_" . $rand . "_no_images.csv";
 
         $filePath = $storagePath.$fileName;
         $filePathNoImg = $storagePath.$fileNameNoImg;
@@ -164,7 +165,7 @@ class ProcessIncomingProducts implements ShouldQueue
                 $line[] = $vPriceRounded;
 
                 // Variant Compare At Price
-                $line[] = $vPrice;
+                $line[] = $variant->compare_at_price ? $variant->compare_at_price : '';
 
                 // Variant Requires Shipping
                 $line[] = 'true';
