@@ -1,7 +1,7 @@
 <x-layout>
-    <h1 class="title is-3">
-        Agenty Agents
-    </h1>
+  <x-slot name="header">  
+    {{ __('Agenty Agents') }}
+  </x-slot>
 
     <table class="table is-bordered is-narrow is-striped is-fullwidth">
         <thead>
